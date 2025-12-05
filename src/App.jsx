@@ -205,15 +205,8 @@ function App() {
         await new Promise(resolve => setTimeout(resolve, 1000)); // Pause to show "thinking"
 
         try {
-          let aiMove;
-
-          // Try ChatGPT AI if API key is available
-          if (import.meta.env.VITE_OPENAI_API_KEY && import.meta.env.VITE_OPENAI_API_KEY !== 'sk-your-openai-api-key-here') {
-            aiMove = await getAIMove(board, currentPlayer, player1Bank, player2Bank, direction, startingPebbles, aiDifficulty);
-          } else {
-            // Fallback to rule-based AI
-            aiMove = getSimpleAIMove(board, currentPlayer, player1Bank, player2Bank);
-          }
+          // Get AI move from Supabase Edge Function
+          const aiMove = await getAIMove(board, currentPlayer, player1Bank, player2Bank, direction, startingPebbles, aiDifficulty);
 
           // Execute the AI's move
           await handleHoleClick(aiMove);
@@ -284,9 +277,6 @@ function App() {
                   <option value="medium">Medium (Strategic AI)</option>
                   <option value="hard">Hard (ChatGPT Expert)</option>
                 </select>
-                {aiDifficulty === 'hard' && !import.meta.env.VITE_OPENAI_API_KEY && (
-                  <p className="ai-warning">⚠️ ChatGPT AI requires OpenAI API key. Will use strategic AI instead.</p>
-                )}
               </>
             )}
           </div>
