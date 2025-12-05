@@ -371,6 +371,17 @@ h1 {
   border-color: #8B6F47;
 }
 
+.ai-warning {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  color: #856404;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
 .start-button, .back-button {
   width: 100%;
   padding: 1.2rem 2.5rem;

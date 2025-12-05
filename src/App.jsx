@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
+import { getAIMove, getSimpleAIMove } from './aiPlayer';
 
 function App() {
   // Initialize the game board: 4x4 grid
@@ -24,6 +25,7 @@ function App() {
 
   const [gameState, setGameState] = useState('setup'); // 'setup', 'welcome', 'playing'
   const [gameMode, setGameMode] = useState('two-player'); // 'one-player' or 'two-player'
+  const [aiDifficulty, setAiDifficulty] = useState('medium'); // 'easy', 'medium', 'hard'
   const [player1Bank, setPlayer1Bank] = useState(7); // Default bank positions
   const [player2Bank, setPlayer2Bank] = useState(15);
   const [direction, setDirection] = useState('clockwise'); // 'clockwise' or 'counterclockwise'
@@ -189,11 +191,42 @@ function App() {
     setCurrentPlayer(2);
     setGameOver(false);
     setWinner(null);
-    setMessage('Player 2\'s turn (Yellow)');
+    setMessage('Player 2\'s turn (Light Wood)');
     setAnimating(false);
     setHandPosition(null);
     setHandAction(null);
   };
+
+  // AI Player Effect - triggers when it's the AI's turn
+  useEffect(() => {
+    if (gameMode === 'one-player' && currentPlayer === 2 && !gameOver && !animating && gameState === 'playing') {
+      const makeAIMove = async () => {
+        setMessage('Computer is thinking...');
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Pause to show "thinking"
+
+        try {
+          let aiMove;
+
+          // Try ChatGPT AI if API key is available
+          if (import.meta.env.VITE_OPENAI_API_KEY && import.meta.env.VITE_OPENAI_API_KEY !== 'sk-your-openai-api-key-here') {
+            aiMove = await getAIMove(board, currentPlayer, player1Bank, player2Bank, direction, startingPebbles, aiDifficulty);
+          } else {
+            // Fallback to rule-based AI
+            aiMove = getSimpleAIMove(board, currentPlayer, player1Bank, player2Bank);
+          }
+
+          // Execute the AI's move
+          await handleHoleClick(aiMove);
+        } catch (error) {
+          console.error('AI move error:', error);
+          setMessage('AI error - your turn!');
+          setCurrentPlayer(1);
+        }
+      };
+
+      makeAIMove();
+    }
+  }, [currentPlayer, gameOver, animating, gameMode, gameState]);
 
   // Render a single hole
   const renderHole = (index) => {
@@ -242,6 +275,20 @@ function App() {
               <option value="two-player">Two Players (Local)</option>
               <option value="one-player">One Player (vs Computer)</option>
             </select>
+
+            {gameMode === 'one-player' && (
+              <>
+                <label>AI Difficulty:</label>
+                <select value={aiDifficulty} onChange={(e) => setAiDifficulty(e.target.value)}>
+                  <option value="easy">Easy (Random moves)</option>
+                  <option value="medium">Medium (Strategic AI)</option>
+                  <option value="hard">Hard (ChatGPT Expert)</option>
+                </select>
+                {aiDifficulty === 'hard' && !import.meta.env.VITE_OPENAI_API_KEY && (
+                  <p className="ai-warning">⚠️ ChatGPT AI requires OpenAI API key. Will use strategic AI instead.</p>
+                )}
+              </>
+            )}
           </div>
 
           <div className="setup-section">
