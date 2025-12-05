@@ -2,6 +2,8 @@
 
 A beautiful, interactive implementation of Tsoro, a traditional Mancala-style board game from Zimbabwe, built with React and featuring online multiplayer.
 
+**🎮 Play Now**: [https://tsoro-lpnixt8io-shakespears-projects.vercel.app/](https://tsoro-lpnixt8io-shakespears-projects.vercel.app/)
+
 ## ✨ Features
 
 - **Traditional Wooden Board**: Authentic dark and light wood aesthetic
