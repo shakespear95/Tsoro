@@ -1,0 +1,6 @@
+node_modules/
+server/data/
+server/.env
+server/firebase-service-account.json
+.claude/
+gam.txt
